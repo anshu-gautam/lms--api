@@ -34,20 +34,9 @@ const orderSchema = new mongoose.Schema({
     requied: true,
   },
 
-  items: [
-    {
-      clothType: {
-        type: String,
-        requied: true,
-      },
-      quantity: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
-  totalCost: {
-    type: Number,
+  item: {
+    requied: true,
+    type: mongoose.Schema.Types.Mixed,
   },
   pickUpDate: {
     type: Date,

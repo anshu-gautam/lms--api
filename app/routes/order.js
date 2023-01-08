@@ -12,7 +12,7 @@ router.post("/orders", authMiddleware, async (req, res) => {
       throw new Error("You are not authorized to place orders.");
     }
 
-    if (!req.body?.items?.length) {
+    if (!Object.keys(req.body?.item).length) {
       throw new Error("Add items to place an order");
     }
 
@@ -63,15 +63,8 @@ router.patch("/orders/:id/status_update", authMiddleware, async (req, res) => {
 router.get("/orders/statistics", authMiddleware, async (req, res) => {
   try {
     const user = req.user;
-    if (user.userRole !== "company") {
-      throw new Error("You are not authorized");
-    }
-    const company = await Company.find({ ownerId: user._id });
 
-    if (!company) {
-      throw new Error("You have not registered your company");
-    }
-
+    const company = await Company.findOne({ ownerId: user._id });
     const orderStatuses = [
       "requested",
       "accepted",
@@ -82,16 +75,29 @@ router.get("/orders/statistics", authMiddleware, async (req, res) => {
 
     let statistics = {};
 
-    const promises = orderStatuses.map(async (status) => {
-      const count = await Order.countDocuments({
-        companyId: company._id,
-        status,
+    if (company) {
+      const promises = orderStatuses.map(async (status) => {
+        const count = await Order.countDocuments({
+          companyId: company._id,
+          status,
+        });
+
+        statistics[status] = count;
       });
 
-      statistics[status] = count;
-    });
+      await Promise.all(promises);
+    } else {
+      const promises = orderStatuses.map(async (status) => {
+        const count = await Order.countDocuments({
+          creatorId: req.user._id,
+          status,
+        });
 
-    await Promise.all(promises);
+        statistics[status] = count;
+      });
+
+      await Promise.all(promises);
+    }
 
     res.status(200).send({ statistics });
   } catch (error) {

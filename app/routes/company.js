@@ -21,6 +21,15 @@ router.post("/companies", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/companies", authMiddleware, async (req, res) => {
+  try {
+    const companies = await Company.find({});
+    res.status(200).send(companies);
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
 router.patch("/companies/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const currentUser = req.user;

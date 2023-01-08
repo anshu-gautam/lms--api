@@ -10,18 +10,10 @@ const companySchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  rate: [
-    {
-      clothType: {
-        type: String,
-        requied: true,
-      },
-      price: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
+  rate: {
+    type: mongoose.Schema.Types.Mixed,
+    required: true,
+  },
 });
 
 const Company = mongoose.model("Company", companySchema);
