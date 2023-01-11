@@ -3,13 +3,15 @@ import cors from "cors";
 import userRouter from "./app/routes/user";
 import companyRouter from "./app/routes/company";
 import orderRouter from "./app/routes/order";
-
 import connectMongo from "./app/util/mongo";
 import morgan from "morgan";
+// import * as dotenv from "dotenv";
 
-const port = process.env.PORT || 3000;
+// dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 3000;
+
 app.use(express.json());
 
 morgan.token("body", (req) => {

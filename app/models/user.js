@@ -3,12 +3,9 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// import { API_ERROR } from "../constants/error";
-
 const MAX_VAL_FOR_PHONE_NUMBER = 9999999999;
 
 const userSchema = new mongoose.Schema({
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
   email: {
     type: String,
     unique: true,
@@ -28,7 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "{Path} is required"],
+    required: [true, "{PATH} is required"],
     minLength: 7,
     trim: true,
     validate(value) {

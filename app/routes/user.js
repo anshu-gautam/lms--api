@@ -2,6 +2,8 @@ import express from "express";
 import { authMiddleware } from "../middlewares/auth";
 import { Company } from "../models/company";
 import { User } from "../models/user";
+import { welcomeUser } from "../email/email";
+
 const router = new express.Router();
 
 router.post("/users", async (req, res) => {
@@ -9,10 +11,14 @@ router.post("/users", async (req, res) => {
 
   try {
     await user.save();
+
+    welcomeUser(user.email, user.name);
+
     const token = await user.generateAuthToken();
     res.status(200).send({ user, token });
   } catch (e) {
-    res.status(400).send(e);
+    console.log(e.message);
+    res.status(400).send(e.message);
   }
 });
 
@@ -29,6 +35,15 @@ router.post("/users/login", async (req, res) => {
     res.send({ user, token });
   } catch (e) {
     res.status(400).send(e.message);
+  }
+});
+
+router.get("/users/profile", authMiddleware, async (req, res) => {
+  try {
+    const user = req.user;
+    res.status(200).send(user);
+  } catch (e) {
+    res.status(500).send(e.message);
   }
 });
 
